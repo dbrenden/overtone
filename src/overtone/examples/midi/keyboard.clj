@@ -63,8 +63,8 @@
         env  (env-gen (adsr 0.001 0.1 0.6 0.3) gate :action FREE)]
     (* amp env snd)))
 
-; Create a polyphonic midi player:y
-                                        ;(def ding-player (midi-poly-player poly-ding))
+; Create a polyphonic midi player
+                                        ;(def ding-player (midi-poly-player-core-async poly-ding))
 
 
 ; and stop it:
