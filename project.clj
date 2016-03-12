@@ -50,7 +50,8 @@
             :distribution :repo
             :comments "Please use Overtone for good"}
 
-  :dependencies [[org.clojure/clojure "1.5.1"]
+  :dependencies [[org.clojure/clojure "1.8.0"]
+                 [org.clojure/core.async "0.2.374"]
                  [org.clojure/data.json "0.2.3"]
                  [clj-native "0.9.3"]
                  [overtone/at-at "1.2.0"]
