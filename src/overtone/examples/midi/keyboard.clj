@@ -1,8 +1,12 @@
 (ns overtone.examples.midi.keyboard
   (:use overtone.live)
   (:require [overtone.inst.synth :as synth]
-            [overtone.synth.retro :as retro]
-            [overtone.studio.midi-player :as mp]))
+            [overtone.synth
+             [retro :as retro]
+             [sts :as sts]]
+            [overtone.examples.synthesis.fm :as fm]
+            [overtone.studio.midi-player :as mp]
+            [overtone.examples.compositions.bells :as bells]))
 
 (definst ding
   [note 60 velocity 100]
@@ -63,8 +67,26 @@
         env  (env-gen (adsr 0.001 0.1 0.6 0.3) gate :action FREE)]
     (* amp env snd)))
 
+(definst pad1 [note 60 amp 0.4 amt 0.3 gate 1.0]
+  (let [freq (midicps note)
+        vel        (+ 0.5 (* 0.5 amp))
+        env        (env-gen (adsr 0.01 0.1 0.7 0.5) gate 1 0 1 FREE)
+        f-env      (env-gen (perc 1 3))
+        src        (pulse [freq (* freq 1.02)])
+        signal     (rlpf (* 0.3 src)
+                         (+ (* 0.6 freq) (* f-env 2 freq)) 0.2)
+        k          (/ (* 2 amt) (- 1 amt))
+        distort    (/ (* (+ 1 k) signal) (+ 1 (* k (abs signal))))
+        gate2       (pulse (* 2 gate (+ 1 (sin-osc:kr 0.05))))
+        compressor (compander distort gate2 0.01 1 0.5 0.01 0.01)
+        dampener   (+ 1 (* 0.5 (sin-osc:kr 0.5)))
+        reverb     (free-verb compressor 0.5 0.5 dampener)
+                                        ;reverb     (free-verb compressor 0.5 0.5)
+        echo       (comb-n reverb 0.4 0.3 0.5)]
+    (* vel env echo)))
+
 ; Create a polyphonic midi player
-                                        ;(def ding-player (midi-poly-player-core-async poly-ding))
+                                        ;(def ding-player (midi-poly-player-core-async pad2))
 
 
 ; and stop it:
